@@ -1,4 +1,4 @@
-package com.gestion.eventos.api.service;
+package com.gestion.eventos.api.security.service;
 
 import com.gestion.eventos.api.domain.Role;
 import com.gestion.eventos.api.domain.User;
