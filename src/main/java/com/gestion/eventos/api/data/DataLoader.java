@@ -5,12 +5,14 @@ import com.gestion.eventos.api.domain.Category;
 import com.gestion.eventos.api.domain.Role;
 import com.gestion.eventos.api.domain.Speaker;
 import com.gestion.eventos.api.domain.User;
-import com.gestion.eventos.api.domain.Event; // ¡Importa la entidad Event!
+import com.gestion.eventos.api.domain.Event;
 import com.gestion.eventos.api.repository.CategoryRepository;
-import com.gestion.eventos.api.repository.EventRepository; // ¡Importa el EventRepository!
+import com.gestion.eventos.api.repository.EventRepository;
 import com.gestion.eventos.api.repository.RoleRepository;
 import com.gestion.eventos.api.repository.SpeakerRepository;
 import com.gestion.eventos.api.repository.UserRepository;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 @Component
+@Profile("dev")
+@Order(2)
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
@@ -41,50 +45,12 @@ public class DataLoader implements CommandLineRunner {
 
         // --- LÓGICA EXISTENTE PARA ROLES Y USUARIOS ---
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                .orElseGet( () -> {
-                    Role newRole = new Role();
-                    newRole.setName("ROLE_ADMIN");
-                    return roleRepository.save(newRole);
-                });
+                .orElseThrow(() ->
+                        new IllegalStateException("No existe ROLE_ADMIN"));
 
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName("ROLE_USER");
-                    return roleRepository.save(newRole);
-                });
-
-        if(userRepository.findByUsername("admin").isEmpty()){
-            User admin = new User();
-            admin.setName("Administrador");
-            admin.setUsername("admin");
-            admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("admin1234"));
-
-            Set<Role> adminRoles = new HashSet<>();
-            adminRoles.add(adminRole);
-            adminRoles.add(userRole);
-
-            admin.setRoles(adminRoles);
-
-            userRepository.save(admin);
-            System.out.println("Usuario 'admin' creado.");
-        }
-
-        if (userRepository.findByUsername("user").isEmpty()) {
-            User regularUser = new User();
-            regularUser.setName("Usuario Normal");
-            regularUser.setUsername("user");
-            regularUser.setEmail("user@example.com");
-            regularUser.setPassword(passwordEncoder.encode("123456"));
-
-            Set<Role> userRoles = new HashSet<>();
-            userRoles.add(userRole);
-            regularUser.setRoles(userRoles);
-
-            userRepository.save(regularUser);
-            System.out.println("Usuario 'user' creado.");
-        }
+                .orElseThrow(() ->
+                        new IllegalStateException("No existe ROLE_USER"));
 
         // --- LÓGICA EXISTENTE PARA CATEGORÍAS ---
         Category conferencia = categoryRepository.findByName("Conferencia")
@@ -116,7 +82,7 @@ public class DataLoader implements CommandLineRunner {
                 });
 
         // --- NUEVA LÓGICA PARA CREAR Y GUARDAR EVENTOS ---
-        if (eventRepository.count() == 0) { // Solo cargar eventos si la tabla está vacía
+        if (eventRepository.count() == 0) {
             List<Event> events = new ArrayList<>();
             LocalDate baseDate = LocalDate.now();
 
