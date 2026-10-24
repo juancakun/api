@@ -24,7 +24,7 @@ public abstract class UserMapper {
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "roles", source = "dto.roles", qualifiedByName = "mapRoleStringsToRoles")
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "attendedEvents", ignore = true)
     public abstract User registerDtoToUser(RegisterDto dto);
 

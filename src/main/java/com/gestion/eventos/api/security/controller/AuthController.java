@@ -7,6 +7,8 @@ import com.gestion.eventos.api.domain.User;
 import com.gestion.eventos.api.mapper.UserMapper;
 import com.gestion.eventos.api.repository.UserRepository;
 import com.gestion.eventos.api.security.jwt.JwtGenerator;
+import com.gestion.eventos.api.security.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtGenerator jwtGenerator;
+    private final AuthService authService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -48,27 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDto){
+    public ResponseEntity<String> registerUser(
+            @Valid @RequestBody RegisterDto registerDto) {
 
-        if(userRepository.existsByUsername(registerDto.getUsername())){
+        authService.register(registerDto);
 
-            return new ResponseEntity<>("El username ya existe",HttpStatus.BAD_REQUEST);
-
-        }
-
-        if(userRepository.existsByEmail(registerDto.getEmail())){
-
-            return new ResponseEntity<>("El email ya existe",HttpStatus.BAD_REQUEST);
-
-        }
-
-        User user = userMapper.registerDtoToUser(registerDto);
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-
-        userRepository.save(user);
-
-        return new ResponseEntity<>("Usuario registrado",HttpStatus.CREATED);
-
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Usuario registrado");
     }
-
 }

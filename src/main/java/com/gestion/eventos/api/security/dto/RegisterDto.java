@@ -26,6 +26,4 @@ public class RegisterDto {
     @NotBlank(message = "El nombre no puede estar vacío.")
     private String name;
 
-    private Set<String> roles;
-
 }
