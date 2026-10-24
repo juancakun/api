@@ -21,6 +21,7 @@ public class User {
     private String name;
     @NotNull
     private String username;
+    @Column(nullable = false, unique = true)
     private String email;
     private String password;
 
