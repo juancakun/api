@@ -14,4 +14,4 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
 
-      SPRING_PROFILES_ACTIVE: dev # O 'prod' si es para simular producción local
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
